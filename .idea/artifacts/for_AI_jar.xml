@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="for_AI:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/for_AI_jar</output-path>
+    <root id="archive" name="for_AI.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/Resources/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="for_AI" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/LogDebugersLib.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

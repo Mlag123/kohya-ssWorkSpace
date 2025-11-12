@@ -98,18 +98,16 @@ public class WindowLogic extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     new WindowImageTagger();
-                } catch (FileNotFoundException ex) {
+                } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
+
             }
         });
     }
 
-    @Deprecated
-    public void changeFormatJPGtoPNG() throws IOException {
-        BufferedImage bufferedImage = ImageIO.read(new File("./run/input/aaa.jpg"));
-        ImageIO.write(bufferedImage, "png", new File("./run/output/aaa.png"));
-    }
+
+
 
 
 }

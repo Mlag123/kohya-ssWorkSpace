@@ -45,10 +45,35 @@ public class Logic {
     }
 
 
-    public void edit_image() {
+    public static ArrayList<File> getAllImages(){
+        ArrayList arr_files = new ArrayList();
+        File input = new File("./run/output");
 
+        for (File file : input.listFiles()) {
+            if (file.isFile()) {
+                String image_name = file.getName().toLowerCase();
+               if (image_name.endsWith(".png")){
+                   arr_files.add(file);
+               }
+            }
+        }
+        return arr_files;
     }
 
+    public static ArrayList<File> getText(){
+        ArrayList arr_files = new ArrayList();
+        File input = new File("./run/output");
+
+        for (File file : input.listFiles()) {
+            if (file.isFile()) {
+                String image_name = file.getName().toLowerCase();
+                if (image_name.endsWith(".txt")){
+                    arr_files.add(file);
+                }
+            }
+        }
+        return arr_files;
+    }
 
     public void Rename(String rename_text, int targetSize) {
         readFiles();

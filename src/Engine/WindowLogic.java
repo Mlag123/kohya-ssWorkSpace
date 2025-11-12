@@ -61,17 +61,17 @@ public class WindowLogic extends JFrame {
 
 
                 if (text.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Введите, как будут называется картинки");
+                    JOptionPane.showMessageDialog(null, "Entered name images");
                 } else {
 
                     logic.Rename(text, imageSize);
-                    JOptionPane.showMessageDialog(null, "Готово!");
+                    JOptionPane.showMessageDialog(null, "Ready!");
 
                     if (text_file_create_bool) {
                         try {
                             logic.createTextFile(text, tags_text);
                         } catch (IOException ex) {
-                            JOptionPane.showMessageDialog(null, "Не удалось создать текстовые файлы");
+                            JOptionPane.showMessageDialog(null, "Cannot create text tags");
                         }
                     }
                 }

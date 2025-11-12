@@ -17,8 +17,12 @@ public class WindowLogic extends JFrame {
     private JTextField jTextName;
     private JTextField jTextTags;
     private JButton editortags;
+    private JTextField image_size;
+    private JCheckBox size_on;
     private Boolean text_file_create_bool = false;
     private Logic logic;
+    private Boolean size_image_on = false;
+
 
     public static URL givenFile_getResourcePath() {
         URL resURL = WindowLogic.class.getResource("/favicon.png");
@@ -38,16 +42,29 @@ public class WindowLogic extends JFrame {
         setResizable(false);
         pack();
 
+        image_size.setEnabled(size_image_on);
+        image_size.setEditable(size_image_on);
+
+
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = jTextName.getText();
                 String tags_text = jTextTags.getText();
+
+                int imageSize;
+                if (!size_image_on){
+                    imageSize = 512;
+                }else {
+                    imageSize= Integer.parseInt(image_size.getText());
+                }
+
+
                 if (text.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Введите, как будут называется картинки");
                 } else {
 
-                    logic.Rename(text);
+                    logic.Rename(text, imageSize);
                     JOptionPane.showMessageDialog(null, "Готово!");
 
                     if (text_file_create_bool) {
@@ -58,6 +75,15 @@ public class WindowLogic extends JFrame {
                         }
                     }
                 }
+            }
+        });
+
+        size_on.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                size_image_on = size_on.isSelected();
+                image_size.setEnabled(size_image_on);
+                image_size.setEditable(size_image_on);
             }
         });
         comboBoxTags.addActionListener(new ActionListener() {

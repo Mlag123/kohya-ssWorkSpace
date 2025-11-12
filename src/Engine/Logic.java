@@ -4,6 +4,7 @@ import logging.Logging;
 import logging.logs;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -16,25 +17,23 @@ import java.util.List;
 
 public class Logic {
 
-    private String root = "./run";
+    private String input_path = "./run/input";
+    private String output_path = "./run/output";
 
     private List<File> arrFiles;
     private List<File> sizeFiles;
-    private List<File> fileForRename;
-    private int a = 1;
-    private String rename = "/image" + a + ".png";
+    private int targetSize = 512;
 
     public Logic() throws InterruptedException {
-        File input = new File("./run/input");
-        File output = new File("./run/output");
+        File input = new File(input_path);
+        File output = new File(output_path);
         if (!input.isDirectory()) input.mkdirs();
         if (!output.isDirectory()) output.mkdirs();
         Logging.log(logs.info, "Workspace created");
 
     }
 
-
-    public void Rename(String rename_text) {
+    public void readFiles() {
         File input = new File("./run/input");
         arrFiles = new ArrayList<>();
         for (File file : input.listFiles()) {
@@ -43,6 +42,23 @@ public class Logic {
             }
         }
         sizeFiles = arrFiles;
+    }
+
+
+    public void edit_image() {
+
+    }
+
+
+    public void Rename(String rename_text, int targetSize) {
+        readFiles();
+
+        if (targetSize == 0 | targetSize <= 64|targetSize>=4096) {
+            JOptionPane.showMessageDialog(null,"Image size can't be less 64x64 or 4096x4096");
+            return;
+        } else {
+            this.targetSize = targetSize;
+        }
 
         for (int i = 0; i < arrFiles.size(); i++) {
             File file = arrFiles.get(i);
@@ -51,6 +67,8 @@ public class Logic {
             String newName = (i == 0) ? rename_text + ".png" : rename_text + i + ".png";
             File outputFile = new File("./run/output/" + newName);
 
+            System.out.println("name: " + output_path);
+
             try {
                 String fileName = file.getName().toLowerCase();
 
@@ -58,7 +76,6 @@ public class Logic {
                     BufferedImage original = ImageIO.read(file);
                     if (original != null) {
                         // масштабирование с сохранением пропорций
-                        int targetSize = 512;
                         double scale = Math.min(
                                 (double) targetSize / original.getWidth(),
                                 (double) targetSize / original.getHeight()
@@ -86,7 +103,7 @@ public class Logic {
                         ImageIO.write(resized, "png", outputFile);
                     }
                 } else {
-                    Logging.log( "Пропущен файл: " + file.getName());
+                    Logging.log("Пропущен файл: " + file.getName());
                 }
 
             } catch (IOException e) {
@@ -115,7 +132,7 @@ public class Logic {
 
             } else {
                 File textFile = new File("./run/output" + "/" + nameText + i + ".txt");
-                if (textFile.createNewFile()){
+                if (textFile.createNewFile()) {
                     fileWriter = new FileWriter(textFile);
                     fileWriter.write(tags_text);
                     fileWriter.flush();

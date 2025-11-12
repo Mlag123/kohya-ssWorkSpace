@@ -13,6 +13,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 public class Logic {
@@ -85,56 +88,84 @@ public class Logic {
             this.targetSize = targetSize;
         }
 
+
+        int cpus = Runtime.getRuntime().availableProcessors();
+        ExecutorService executorService = Executors.newFixedThreadPool(cpus);
+        List<Future<?>> futures = new ArrayList<>();
+
         for (int i = 0; i < arrFiles.size(); i++) {
-            File file = arrFiles.get(i);
+            final int index = i;
+            Future<?> future = executorService.submit(()->{
 
-            // имя выходного файла
-            String newName = (i == 0) ? rename_text + ".png" : rename_text + i + ".png";
-            File outputFile = new File("./run/output/" + newName);
+                try {
+                    System.out.println("Обрабатываем файл " + (index + 1) + " в потоке: " + Thread.currentThread().getName());
 
-            System.out.println("name: " + output_path);
+                    File file = arrFiles.get(index);
+                    String newName = (index == 0) ? rename_text + ".png" : rename_text + index + ".png";
+                    File outputFile = new File("./run/output/" + newName);
+                    processSingleImage(file,outputFile,targetSize);
+                }catch (Exception e){
 
-            try {
-                String fileName = file.getName().toLowerCase();
-
-                if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")) {
-                    BufferedImage original = ImageIO.read(file);
-                    if (original != null) {
-                        // масштабирование с сохранением пропорций
-                        double scale = Math.min(
-                                (double) targetSize / original.getWidth(),
-                                (double) targetSize / original.getHeight()
-                        );
-                        int newW = (int) (original.getWidth() * scale);
-                        int newH = (int) (original.getHeight() * scale);
-
-                        Image scaled = original.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
-
-                        // создаём пустую 512x512 картинку
-                        BufferedImage resized = new BufferedImage(targetSize, targetSize, BufferedImage.TYPE_INT_ARGB);
-                        Graphics2D g2d = resized.createGraphics();
-
-                        // фон (чёрный)
-                        g2d.setColor(Color.BLACK);
-                        g2d.fillRect(0, 0, targetSize, targetSize);
-
-                        // рисуем картинку по центру
-                        int x = (targetSize - newW) / 2;
-                        int y = (targetSize - newH) / 2;
-                        g2d.drawImage(scaled, x, y, null);
-                        g2d.dispose();
-
-                        // сохраняем в PNG
-                        ImageIO.write(resized, "png", outputFile);
-                    }
-                } else {
-                    Logging.log("Пропущен файл: " + file.getName());
                 }
 
-            } catch (IOException e) {
-                Logging.log(logs.error, "Ошибка при обработке файла: " + file.getName());
-                e.printStackTrace();
+            });
+            futures.add(future);
+        }
+
+        JOptionPane.showMessageDialog(null,"Waiting load images");
+
+        for(Future<?> future:futures){
+            try {
+                future.get();
+            }catch (Exception e){
+                System.err.println(e);
             }
+        }
+
+    }
+
+
+    private void processSingleImage(File inputFile, File outputFile, int targetSize) {
+        try {
+            String fileName = inputFile.getName().toLowerCase();
+
+            if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
+                Logging.log("Пропущен файл: " + inputFile.getName());
+                return;
+            }
+
+            BufferedImage original = ImageIO.read(inputFile);
+            if (original != null) {
+                // Масштабирование с сохранением пропорций
+                double scale = Math.min(
+                        (double) targetSize / original.getWidth(),
+                        (double) targetSize / original.getHeight()
+                );
+                int newW = (int) (original.getWidth() * scale);
+                int newH = (int) (original.getHeight() * scale);
+
+                Image scaled = original.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+
+                // Создаём пустую 512x512 картинку
+                BufferedImage resized = new BufferedImage(targetSize, targetSize, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = resized.createGraphics();
+
+                // Фон (чёрный)
+                g2d.setColor(Color.BLACK);
+                g2d.fillRect(0, 0, targetSize, targetSize);
+
+                // Рисуем картинку по центру
+                int x = (targetSize - newW) / 2;
+                int y = (targetSize - newH) / 2;
+                g2d.drawImage(scaled, x, y, null);
+                g2d.dispose();
+
+                // Сохраняем в PNG
+                ImageIO.write(resized, "png", outputFile);
+                System.out.println("Обработан: " + outputFile.getName());
+            }
+        } catch (IOException e) {
+            Logging.log(logs.error, "Ошибка при обработке файла: " + inputFile.getName());
         }
     }
 

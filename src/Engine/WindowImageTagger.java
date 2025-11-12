@@ -145,7 +145,15 @@ public class WindowImageTagger extends JFrame {
             String file_to_path = file.getPath();
             ImageIcon imageIcon = new ImageIcon(file_to_path);
             Image image = imageIcon.getImage();
-            Image scaledImage = image.getScaledInstance(512, 512, Image.SCALE_SMOOTH);
+            Image scaledImage = null;
+            if(!(image.getWidth(null)<512)){
+               scaledImage = image.getScaledInstance(512, 512, Image.SCALE_SMOOTH);
+
+            }else {
+                scaledImage = image.getScaledInstance(128, 128, Image.SCALE_SMOOTH);
+
+            }
+
             imageIcon = new ImageIcon(scaledImage);
             System.out.println(file.getName().replace(".png", ""));
             image_andName.put(file.getName().replace(".png", ""), imageIcon);

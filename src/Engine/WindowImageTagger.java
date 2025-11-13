@@ -36,7 +36,7 @@ public class WindowImageTagger extends JFrame {
         setContentPane(main_panel);
         setResizable(true);
         setSize(768, 768);
-
+        setTitle("Promt Editor");
 
         image_array = Logic.getAllImages();
         tags_array = Logic.getText();
@@ -45,7 +45,7 @@ public class WindowImageTagger extends JFrame {
         file_name.setText(file_names.get(current_image));
 
         image_label.setIcon(image_andName.get(file_names.get(current_image)));
-
+        readAndSetTextInLabel(current_image);
 
         listenerEvent();
     }

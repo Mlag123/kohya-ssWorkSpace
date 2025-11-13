@@ -44,6 +44,8 @@ public class WindowLogic extends JFrame {
 
         image_size.setEnabled(size_image_on);
         image_size.setEditable(size_image_on);
+        jTextTags.setEditable(text_file_create_bool);
+        jTextTags.setEnabled(text_file_create_bool);
 
 
         button.addActionListener(new ActionListener() {
@@ -90,7 +92,8 @@ public class WindowLogic extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 text_file_create_bool = comboBoxTags.isSelected();
-
+                jTextTags.setEditable(text_file_create_bool);
+                jTextTags.setEnabled(text_file_create_bool);
             }
         });
         editortags.addActionListener(new ActionListener() {
